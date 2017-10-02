@@ -1,0 +1,39 @@
+{
+  "name": "vuemaker-webpack-plugin",
+  "version": "0.0.1",
+  "description": "Webpack plugin to build vue files from html/script/style files",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thierrymichel/vuemaker-webpack-plugin.git"
+  },
+  "keywords": [
+    "vue",
+    "webpack",
+    "build",
+    "component",
+    "separate",
+    "files"
+  ],
+  "author": {
+    "name": "Thierry Michel",
+    "email": "thmichel@gmail.com",
+    "url": "http://thierrymichel.net"
+  },
+  "license": "SEE LICENSE IN UNLICENSE",
+  "bugs": {
+    "url": "https://github.com/thierrymichel/vuemaker-webpack-plugin/issues"
+  },
+  "homepage": "https://github.com/thierrymichel/vuemaker-webpack-plugin#readme",
+  "dependencies": {
+    "async": "^2.5.0",
+    "del": "^3.0.0",
+    "junk": "^2.1.0",
+    "lodash": "^4.17.4",
+    "recursive-readdir": "^2.2.1",
+    "replace-ext": "^1.0.0"
+  }
+}
