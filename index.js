@@ -1,4 +1,3 @@
-const del = require('del');
 const each = require('async/each');
 const fs = require('fs');
 const junk = require('junk');
@@ -19,14 +18,13 @@ const {
 function VuemakerPlugin (options = {}) {
   if (options.root) {
     if (path.isAbsolute(options.root)) {
-      this.directory = options.root;
+      this.root = options.root;
     } else {
-      this.directory = path.resolve(path.join(process.cwd(), options.root));
+      this.root = path.resolve(path.join(process.cwd(), options.root));
     }
   } else {
-    this.directory = process.cwd();
+    this.root = process.cwd();
   }
-  this.folder = options.folder || false;
 }
 
 /**
@@ -35,7 +33,7 @@ function VuemakerPlugin (options = {}) {
  * @param {string} ext file extension
  * @returns {object|null} tag + lang attribute
  */
-VuemakerPlugin.prototype.getFromExt = function getFromExt(ext) {
+VuemakerPlugin.getFromExt = function getFromExt(ext) {
   // Set element + optional attribute
   switch (ext) {
     case '.css':
@@ -89,7 +87,7 @@ VuemakerPlugin.prototype.getFromExt = function getFromExt(ext) {
  * @param {string} content file content
  * @returns {boolean} scoped or not
  */
-VuemakerPlugin.prototype.isScoped = function isScoped(content) {
+VuemakerPlugin.isScoped = function isScoped(content) {
   const endLine = content.indexOf('\n');
   const re = /^\/\*.*vue.*scoped.*\*\/$/;
   const str = content.slice(0, endLine);
@@ -100,24 +98,25 @@ VuemakerPlugin.prototype.isScoped = function isScoped(content) {
 /**
  * Build .vue files.
  *
- * @param {Compiler} compiler webpack plugin Compiler
+ * @param {string} root root folder for files
  * @param {function} cb callback
  * @returns {undefined}
  */
-VuemakerPlugin.prototype.build = function build(compiler, cb) {
+VuemakerPlugin.build = function build(root, cb) {
   console.info('Building .vue files');
   const components = new Map();
 
-  readDir(this.directory).then(
+  readDir(root).then(
     (files) => {
       files
         .filter((file) => junk.not(path.basename(file)))
         .forEach((file) => {
           if (path.extname(file) !== '.vue') {
-            const component = this.getFromExt(path.extname(file));
+            const component = VuemakerPlugin.getFromExt(path.extname(file));
             const componentName = replaceExt(file, '.vue');
 
             component.content = fs.readFileSync(file, 'utf-8');
+            component.source = file;
 
             if (components.has(componentName)) {
               components.get(componentName).push(component);
@@ -128,7 +127,7 @@ VuemakerPlugin.prototype.build = function build(compiler, cb) {
             }
           }
         });
-      this.write(components, cb);
+      VuemakerPlugin.write(components, cb);
     },
     (err) => {
       cb(err);
@@ -143,9 +142,7 @@ VuemakerPlugin.prototype.build = function build(compiler, cb) {
  * @param {function} cb callback
  * @returns {undefined}
  */
-VuemakerPlugin.prototype.write = function write(components, cb) {
-  this.files = [];
-
+VuemakerPlugin.write = function write(components, cb) {
   each(
     components,
     (component, callback) => {
@@ -153,12 +150,10 @@ VuemakerPlugin.prototype.write = function write(components, cb) {
       let tags = component[1].map((partial) => {
         const tag = {};
         const attribute = partial.lang ? ` lang="${partial.lang}"` : '';
-        const scoped = this.isScoped(partial.content) ? ' scoped' : '';
+        const scoped = VuemakerPlugin.isScoped(partial.content) ? ' scoped' : '';
 
         tag.name = partial.tag;
-        tag.content = `<${partial.tag}${attribute}${scoped}>
-  ${partial.content}</${partial.tag}>
-  `;
+        tag.content = `<${partial.tag}${attribute}${scoped} src="${partial.source}"></${partial.tag}>\n`;
 
         return tag;
       });
@@ -173,7 +168,6 @@ VuemakerPlugin.prototype.write = function write(components, cb) {
         filename,
         tags.map((tag) => tag.content).join(''),
         () => {
-          this.files.push(filename);
           callback();
         }
       );
@@ -188,16 +182,22 @@ VuemakerPlugin.prototype.write = function write(components, cb) {
   );
 };
 
-VuemakerPlugin.prototype.clean = function clean() {
-  del(this.files).then(() => {
-    console.info('Deleted .vue files');
-  });
-};
-
 VuemakerPlugin.prototype.apply = function apply(compiler) {
-  compiler.plugin('run', this.build.bind(this));
-  compiler.plugin('watch-run', this.build.bind(this));
-  compiler.plugin('done', this.clean.bind(this));
+  const { root } = this;
+
+  /* eslint-disable prefer-arrow-callback */
+  compiler.plugin('run', function run(compilation, cb) {
+    VuemakerPlugin.build(root, cb);
+  });
+  compiler.plugin('watch-run', function watch(compilation, cb) {
+    VuemakerPlugin.build(root, cb);
+  });
+
+  compiler.plugin('after-compile', function after(compilation, callback) {
+    compilation.fileDependencies = compilation.fileDependencies.filter((file) => path.extname(file) !== '.vue');
+    callback();
+  });
+  /* eslint-enable prefer-arrow-callback */
 };
 
 module.exports = VuemakerPlugin;
