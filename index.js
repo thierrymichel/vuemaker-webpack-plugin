@@ -107,10 +107,10 @@ VuemakerPlugin.build = function build(root, cb) {
   const components = new Map();
 
   readDir(root).then(
-    (files) => {
+    files => {
       files
-        .filter((file) => junk.not(path.basename(file)))
-        .forEach((file) => {
+        .filter(file => junk.not(path.basename(file)))
+        .forEach(file => {
           if (path.extname(file) !== '.vue') {
             const component = VuemakerPlugin.getFromExt(path.extname(file));
             const componentName = replaceExt(file, '.vue');
@@ -129,7 +129,7 @@ VuemakerPlugin.build = function build(root, cb) {
         });
       VuemakerPlugin.write(components, cb);
     },
-    (err) => {
+    err => {
       cb(err);
     }
   );
@@ -147,7 +147,7 @@ VuemakerPlugin.write = function write(components, cb) {
     components,
     (component, callback) => {
       const [filename] = component;
-      let tags = component[1].map((partial) => {
+      let tags = component[1].map(partial => {
         const tag = {};
         const attribute = partial.lang ? ` lang="${partial.lang}"` : '';
         const scoped = VuemakerPlugin.isScoped(partial.content) ? ' scoped' : '';
@@ -161,18 +161,18 @@ VuemakerPlugin.write = function write(components, cb) {
       // Sort tags by type property.
       const order = ['style', 'template', 'script'];
 
-      tags = sortBy(tags, (tag) => indexOf(order, tag.name));
+      tags = sortBy(tags, tag => indexOf(order, tag.name));
 
       // Write .vue file.
       fs.writeFile(
         filename,
-        tags.map((tag) => tag.content).join(''),
+        tags.map(tag => tag.content).join(''),
         () => {
           callback();
         }
       );
     },
-    (err) => {
+    err => {
       if (err) {
         cb(err);
       } else {
@@ -194,7 +194,7 @@ VuemakerPlugin.prototype.apply = function apply(compiler) {
   });
 
   compiler.plugin('after-compile', function after(compilation, callback) {
-    compilation.fileDependencies = compilation.fileDependencies.filter((file) => path.extname(file) !== '.vue');
+    compilation.fileDependencies = compilation.fileDependencies.filter(file => path.extname(file) !== '.vue');
     callback();
   });
   /* eslint-enable prefer-arrow-callback */

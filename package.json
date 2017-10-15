@@ -4,6 +4,8 @@
   "description": "Webpack plugin to build vue files from html/script/style files",
   "main": "index.js",
   "scripts": {
+    "lint": "eslint index.js || exit 0",
+    "prepublish": "npm run lint",
     "test": "echo \"Error: no test specified\" && exit 0"
   },
   "repository": {
@@ -35,5 +37,9 @@
     "lodash": "^4.17.4",
     "recursive-readdir": "^2.2.1",
     "replace-ext": "^1.0.0"
+  },
+  "devDependencies": {
+    "babel-eslint": "^8.0.1",
+    "eslint": "^4.9.0"
   }
 }
