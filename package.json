@@ -1,6 +1,6 @@
 {
   "name": "vuemaker-webpack-plugin",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Webpack plugin to build vue files from html/script/style files",
   "main": "index.js",
   "scripts": {
