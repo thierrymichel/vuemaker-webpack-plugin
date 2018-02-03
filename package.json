@@ -4,9 +4,11 @@
   "description": "Webpack plugin to build vue files from html/script/style files",
   "main": "index.js",
   "scripts": {
+    "coverage": "nyc report --reporter=text-lcov | coveralls",
     "lint": "eslint index.js || exit 0",
-    "prepublish": "npm run lint",
-    "test": "echo \"Error: no test specified\" && exit 0"
+    "prepublish": "npm run lint && npm test",
+    "test": "nyc ava -v",
+    "test:watch": "ava -v -w --color"
   },
   "repository": {
     "type": "git",
@@ -39,7 +41,26 @@
     "replace-ext": "^1.0.0"
   },
   "devDependencies": {
+    "ava": "^0.22.0",
     "babel-eslint": "^8.0.1",
-    "eslint": "^4.9.0"
+    "babel-preset-env": "^1.6.1",
+    "coveralls": "^3.0.0",
+    "eslint": "^4.9.0",
+    "nyc": "^11.4.1",
+    "webpack": "^3.10.0",
+    "yeoman-assert": "^3.1.0"
+  },
+  "ava": {
+    "files": [
+      "test/*.js"
+    ],
+    "source": [
+      "test/**/*",
+      "!test/output/*",
+      "!test/fixtures/*.vue"
+    ],
+    "require": [
+      "babel-register"
+    ]
   }
 }

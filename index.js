@@ -82,6 +82,7 @@ VuemakerPlugin.getFromExt = function getFromExt(ext) {
         lang: 'coffee',
       };
     default:
+      /* istanbul ignore next */
       return null;
   }
 };
@@ -149,6 +150,7 @@ VuemakerPlugin.build = function build(root, cb) {
       VuemakerPlugin.write(components, cb);
     },
     err => {
+      /* istanbul ignore next */
       cb(err);
     }
   );
@@ -170,7 +172,7 @@ VuemakerPlugin.write = function write(components, cb) {
         const tag = {};
         const attribute = partial.lang ? ` lang="${partial.lang}"` : '';
         const scoped = VuemakerPlugin.isScoped(partial.content) ? ' scoped' : '';
-        const functional = VuemakerPlugin.isFunctional(partial.content) ? ' scoped' : '';
+        const functional = VuemakerPlugin.isFunctional(partial.content) ? ' functional' : '';
 
         tag.name = partial.tag;
         tag.content = `<${partial.tag}${attribute}${scoped}${functional} src="${partial.source}"></${partial.tag}>\n`;
@@ -194,6 +196,7 @@ VuemakerPlugin.write = function write(components, cb) {
     },
     err => {
       if (err) {
+        /* istanbul ignore next */
         cb(err);
       } else {
         cb();
@@ -210,6 +213,7 @@ VuemakerPlugin.prototype.apply = function apply(compiler) {
     VuemakerPlugin.build(root, cb);
   });
   compiler.plugin('watch-run', function watch(compilation, cb) {
+    /* istanbul ignore next */
     VuemakerPlugin.build(root, cb);
   });
 

@@ -1,0 +1,7 @@
+### Custom ###
+/test
+/.nyc_output
+/.babelrc
+/.editorconfig
+/.eslintrc.json
+/.travis.yml
