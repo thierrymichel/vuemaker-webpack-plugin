@@ -66,6 +66,11 @@ VuemakerPlugin.getFromExt = function getFromExt(ext) {
         tag: 'template',
         lang: 'jade',
       };
+    case '.pug':
+      return {
+        tag: 'template',
+        lang: 'pug',
+      };
     case '.js':
       return {
         tag: 'script',
