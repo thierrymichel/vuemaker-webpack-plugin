@@ -8,7 +8,7 @@
 
 ## Description
 
-This plugin takes your `*.js|coffee|css|scss|sass|less|styl|html|jade` files and makes one `*.vue` file for webpack and vue-loader.
+This plugin takes your `*.js|coffee|css|scss|sass|less|styl|html|pug|jade` files and makes one `*.vue` file for webpack and vue-loader.
 
 ## Usage
 
@@ -29,9 +29,18 @@ module.exports = {
 
 ### "scoped" support
 
-Add a one line multiline comment on the top (first line) of your style file with vue and scoped mentioned.
+Add a one line multiline comment on the top (first line) of your style file with `vue` and `scoped` mentioned.
 
 ```css
 /* vue:scoped */
 Your styles here…
+```
+
+### "functional" support
+
+Add a one line multiline comment on the top (first line) of your style file with `vue` and `functional` mentioned.
+
+```html
+<!-- vue:functional -->
+Your template here…
 ```

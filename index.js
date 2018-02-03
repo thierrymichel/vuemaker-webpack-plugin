@@ -101,6 +101,20 @@ VuemakerPlugin.isScoped = function isScoped(content) {
 };
 
 /**
+ * Check if functional (\/* vue:functional *\/).
+ *
+ * @param {string} content file content
+ * @returns {boolean} functional or not
+ */
+VuemakerPlugin.isFunctional = function isFunctional(content) {
+  const endLine = content.indexOf('\n');
+  const re = /^<!--.*vue.*functional.*-->$/;
+  const str = content.slice(0, endLine);
+
+  return str.match(re) !== null;
+};
+
+/**
  * Build .vue files.
  *
  * @param {string} root root folder for files
@@ -156,9 +170,10 @@ VuemakerPlugin.write = function write(components, cb) {
         const tag = {};
         const attribute = partial.lang ? ` lang="${partial.lang}"` : '';
         const scoped = VuemakerPlugin.isScoped(partial.content) ? ' scoped' : '';
+        const functional = VuemakerPlugin.isFunctional(partial.content) ? ' scoped' : '';
 
         tag.name = partial.tag;
-        tag.content = `<${partial.tag}${attribute}${scoped} src="${partial.source}"></${partial.tag}>\n`;
+        tag.content = `<${partial.tag}${attribute}${scoped}${functional} src="${partial.source}"></${partial.tag}>\n`;
 
         return tag;
       });
