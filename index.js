@@ -208,20 +208,21 @@ VuemakerPlugin.write = function write(components, cb) {
 VuemakerPlugin.prototype.apply = function apply(compiler) {
   const { root } = this;
 
-  /* eslint-disable prefer-arrow-callback */
-  compiler.plugin('run', function run(compilation, cb) {
+  compiler.hooks.run.tapAsync('vuemaker-webpack-plugin', (compiler, cb) => {
     VuemakerPlugin.build(root, cb);
   });
-  compiler.plugin('watch-run', function watch(compilation, cb) {
+  compiler.hooks.watchRun.tapAsync('vuemaker-webpack-plugin', (compiler, cb) => {
     /* istanbul ignore next */
     VuemakerPlugin.build(root, cb);
   });
-
-  compiler.plugin('after-compile', function after(compilation, callback) {
-    compilation.fileDependencies = compilation.fileDependencies.filter(file => path.extname(file) !== '.vue');
-    callback();
+  compiler.hooks.afterCompile.tapAsync('vuemaker-webpack-plugin', (compilation, cb) => {
+    for (const file of compilation.fileDependencies) {
+      if (path.extname(file) === '.vue') {
+        compilation.fileDependencies.delete(file);
+      }
+    }
+    cb();
   });
-  /* eslint-enable prefer-arrow-callback */
 };
 
 module.exports = VuemakerPlugin;
