@@ -42,11 +42,11 @@
   },
   "devDependencies": {
     "ava": "^0.25.0",
-    "babel-eslint": "^8.2.3",
+    "babel-eslint": "^10.0.1",
     "babel-preset-env": "^1.6.1",
     "coveralls": "^3.0.0",
-    "eslint": "^4.19.1",
-    "nyc": "^11.4.1",
+    "eslint": "^5.6.1",
+    "nyc": "^13.0.1",
     "webpack": "^4.2.0",
     "yeoman-assert": "^3.1.0"
   },
